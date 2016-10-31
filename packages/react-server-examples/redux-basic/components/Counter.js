@@ -41,7 +41,6 @@ class Counter extends Component {
 
   render() {
     const { value, onIncrement, onDecrement } = this.props
-    console.log('#########counter init value', value);
     return (
       <p>
         Clicked: {value} times
@@ -72,6 +71,6 @@ Counter.propTypes = {
   onDecrement: PropTypes.func.isRequired
 }
 
-const mapStateToProps = state => ({ value: state.count })
+const mapStateToProps = state => ({value: state.count});
 
 export default connect(mapStateToProps, null)(Counter)

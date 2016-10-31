@@ -1,5 +1,7 @@
 import JsonEndpoint from '../../middleware/json_endpoint';
 
+var count = 123;
+
 export default class CounterAPI {
   static middleware() {
     return [JsonEndpoint];
@@ -10,7 +12,7 @@ export default class CounterAPI {
   }
 
   getResponseData() {
-    return Promise.resolve(123);
+    return Promise.resolve(count++);
   }
 
 }

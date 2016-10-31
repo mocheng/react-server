@@ -8,20 +8,26 @@ import reducer from './reducer'
 import store from '../store'
 
 export default class CounterPage {
+
   getElements() {
+    let storeUpdatedPromise;
 
-    const counterPromise = Counter.init();
+    // TODO: make below logic in abstract function of store.
+    if (global.window) {
+      storeUpdatedPromise = Promise.resolve(HULU.INITIAL_STATE);
+    } else {
+      const counterPromise = Counter.init();
 
-    let pageState = {foo: 'bar'};
-
-    const storeUpdatedPromise = counterPromise.then( (count) => {
-      store.dispatch({type: 'INIT', val: {count} })
-      pageState = {
-        count
-      };
-      console.log('#pageState', pageState);
-      return pageState;
-    });
+      storeUpdatedPromise = counterPromise.then( (count) => {
+        store.dispatch({type: 'INIT', val: {count} })
+        const pageState = {
+          count
+        };
+        return pageState;
+      }).then( (result) => {
+        return result;
+      });
+    }
 
     return [
       <RootContainer>
