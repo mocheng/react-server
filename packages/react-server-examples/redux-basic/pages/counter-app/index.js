@@ -1,8 +1,9 @@
 import React from 'react'
-import { RootElement } from 'react-server'
+import { RootContainer, RootElement } from 'react-server'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import Counter from '../../components/Counter'
+import Dehydrate from '../../components/Dehydrate'
 import reducer from './reducer'
 import store from '../store'
 
@@ -11,21 +12,31 @@ export default class CounterPage {
 
     const counterPromise = Counter.init();
 
+    let pageState = {foo: 'bar'};
+
     const storeUpdatedPromise = counterPromise.then( (count) => {
-      store.dispatch({type: 'INIT', val: count})
-      return count;
+      store.dispatch({type: 'INIT', val: {count} })
+      pageState = {
+        count
+      };
+      console.log('#pageState', pageState);
+      return pageState;
     });
 
     return [
-      <RootElement key={0} when={storeUpdatedPromise}>
-        <Provider store={store}>
-          <Counter
-            value={store.getState()}
-            onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
-            onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
-          />
-        </Provider>
-      </RootElement>
+      <RootContainer>
+        <RootElement key={0} when={storeUpdatedPromise}>
+          <Provider store={store}>
+            <div>
+              <Counter
+                onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
+                onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
+              />
+              <Dehydrate />
+            </div>
+          </Provider>
+        </RootElement>
+      </RootContainer>
     ]
   }
 
