@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { ReactServerAgent } from 'react-server'
 
+require('isomorphic-fetch');
+
 class Counter extends Component {
   constructor(props) {
     super(props)
@@ -10,9 +12,19 @@ class Counter extends Component {
   }
 
   static init() {
-    return ReactServerAgent.get('http://localhost:3000/count').then( (res) => {
-      return JSON.parse(res.text).payload;
-    }).catch( (error) => {
+    return fetch('http://localhost:3000/count').then((response) => {
+      const statusCode = response.status;
+
+      if (statusCode >=200 && statusCode < 300) {
+        return response.json();
+      } else {
+        const error = new Error(response.statusText);
+        error.response = response;
+        throw error;
+      }
+    }).then(
+      responseBody => responseBody.payload
+    ).catch( (error) => {
       console.log(error);
     });
   }
@@ -59,6 +71,6 @@ Counter.propTypes = {
   onDecrement: PropTypes.func.isRequired
 }
 
-const mapStateToProps = state => ({ value: state })
+const mapStateToProps = state => ({value: state.count});
 
 export default connect(mapStateToProps, null)(Counter)
